@@ -73,7 +73,7 @@ class Board
                 assert(board[i] == true);
                 board[i] = false;
             }
-            blk.setSmallEdge(smallEdgeIndex);
+            blk.set(smallEdgeIndex);
             for(int i = blk.get(0); i <= blk.get(1); i += blk.getMultiplier())
             {
                 assert(board[i] == false);

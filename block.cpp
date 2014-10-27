@@ -8,17 +8,13 @@ using std::vector;
 
 Block::Block(BlockColor c, BlockDirection dir, uint8_t len, uint8_t e, int gid) :
     color(c), direction(dir), length(len),
-    multiplier((direction == BlockDirection::VERTICAL) ? 6 : 1), globalId(gid)
-{
-    setSmallEdge(e);
-}
+    multiplier((direction == BlockDirection::VERTICAL) ? 6 : 1), globalId(gid),
+    edge(e) { }
 
 Block::Block(BlockColor c, BlockDirection dir, uint8_t len, uint8_t e) :
     color(c), direction(dir), length(len),
-    multiplier((direction == BlockDirection::VERTICAL) ? 6 : 1)
-{
-    setSmallEdge(e);
-}
+    multiplier((direction == BlockDirection::VERTICAL) ? 6 : 1),
+    edge(e) { }
 
 ostream& operator<<(ostream& os, const Block& b)
 {
@@ -27,22 +23,22 @@ ostream& operator<<(ostream& os, const Block& b)
     else
         os << "BROWN ";
     if(b.length == 3) {
-        assert(b.edge[1] - b.edge[0] == 2 * b.multiplier);
-        return os << static_cast<int>(b.edge[0]) << " "
-            << static_cast<int>(b.edge[0] + b.multiplier) << " "
-            << static_cast<int>(b.edge[1]) << endl;
+        assert(b.get(1) - b.get(0) == 2 * b.multiplier);
+        return os << static_cast<int>(b.get(0)) << " "
+            << static_cast<int>(b.get(0) + b.multiplier) << " "
+            << static_cast<int>(b.get(1)) << endl;
     }
-    return os << static_cast<int>(b.edge[0]) << " "
-        << static_cast<int>(b.edge[1]) << endl;
+    return os << static_cast<int>(b.get(0)) << " "
+        << static_cast<int>(b.get(1)) << endl;
 }
 
 void Block::fillIndices(bitset<36>& bitmap)
 {
-    assert((bitmap[edge[0]] || bitmap[edge[1]]) == 0);
-    bitmap[edge[0]] = bitmap[edge[1]] = 1;
+    assert((bitmap[get(0)] || bitmap[get(1)]) == 0);
+    bitmap[get(0)] = bitmap[get(1)] = 1;
     if(length > 2) {
-        assert(bitmap[edge[0] + multiplier] == 0);
-        bitmap[edge[0] + multiplier] = 1;
+        assert(bitmap[get(0) + multiplier] == 0);
+        bitmap[get(0) + multiplier] = 1;
     }
 }
 
@@ -125,13 +121,13 @@ void Block::moveDistance(const bitset<36>& bitmap, int* twoDirection) const
 {
     if(direction == BlockDirection::HORIZONTAL)
     {
-        twoDirection[0] = moveLeft(bitmap, edge[0]);
-        twoDirection[1] = moveRight(bitmap, edge[1]);
+        twoDirection[0] = moveLeft(bitmap, get(0));
+        twoDirection[1] = moveRight(bitmap, get(1));
     }
     else
     {
-        twoDirection[0] = moveUp(bitmap, edge[0]);
-        twoDirection[1] = moveDown(bitmap, edge[1]);
+        twoDirection[0] = moveUp(bitmap, get(0));
+        twoDirection[1] = moveDown(bitmap, get(1));
     }
     // cout << __PRETTY_FUNCTION__ << ": " << twoDirection[0] << " " <<
     //     twoDirection[1] << endl;
