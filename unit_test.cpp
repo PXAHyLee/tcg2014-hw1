@@ -48,14 +48,14 @@ namespace unit_test {
         Parser parser(string("input/input2"));
         Board board(parser.getBoardFromFile());
 
-        unit_test::block_unit_test(board);
+        // unit_test::block_unit_test(board);
 
-        // SearchAlgorithm* algo = new BFS(board);
-        //
-        // Board::setAlgorithm(algo);
-        // cout << "initial board is like: " << endl;
-        // cout << board << endl;
-        // cout << "--------------------" << endl;
+        SearchAlgorithm* algo = new BFSWithVistedStatesCheck(board);
+
+        Board::setAlgorithm(algo);
+        cout << "initial board is like: " << endl;
+        cout << board << endl;
+        cout << "--------------------" << endl;
 
         // try one moves
         // vector<Board> bb = board.moves();
@@ -65,7 +65,7 @@ namespace unit_test {
         //     cout << e << endl;
         // }
 
-        // algo->solveProblem();
+        algo->solveProblem();
         return 0;
     }
 }

@@ -23,6 +23,8 @@ class Board
         Board(const bitset<36> initialBoard, uint8_t numberOfBlk,
                 const Block* blkArray) : board(initialBoard), cost(0)
         {
+            // initialize to zero
+            memset(hashes, 0, sizeof(hashes));
             blocks.reserve(static_cast<int>(numberOfBlk));
             for(uint8_t i = 0; i < numberOfBlk; ++i)
             {
@@ -68,6 +70,7 @@ class Board
         void updateTheBoard(int blkIdx, int smallEdgeIndex)
         {
             Block& blk = blocks[blkIdx];
+            int org_hash = blk.hash();
             for(int i = blk.get(0); i <= blk.get(1); i += blk.getMultiplier())
             {
                 assert(board[i] == true);
@@ -80,6 +83,9 @@ class Board
                 board[i] = true;
             }
             hashes[blkIdx] = blk.hash();
+            assert(hashes[blkIdx] != org_hash);
+            for(int i = blocks.size() + 1; i < 18; ++i)
+                assert(hashes[i] == 0);
         }
 
         bool canRedBlockUnblockInOneStep()
@@ -89,9 +95,9 @@ class Board
                 if(e.getColor() == BlockColor::RED)
                 {
                     bool rst = true;
-                    for(int j = e.get(1); j < 18; ++j)
+                    for(int j = e.get(1) + 1; j < 18; ++j)
                     {
-                        rst &= board[j] == false;
+                        rst &= (board[j] == false);
                         if(rst == false)
                             return rst;
                     }
@@ -110,7 +116,7 @@ class Board
 
         bool operator<(const Board& other) const
         {
-            return memcmp(hashes, other.hashes, sizeof(hashes));
+            return memcmp(hashes, other.hashes, sizeof(hashes)) < 0;
         }
 
         friend ostream& operator<<(ostream& os, const Board& b);

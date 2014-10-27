@@ -52,12 +52,21 @@ vector<Board> Board::moves() const
 ostream& operator<<(ostream& os, const Board& b)
 {
     auto tmpBoard = b.getBoard();
+    auto cstring = "ABCDEFGHIJKLMN";
     for(int i = 0; i < 6; i++) {
-        os << tmpBoard[0] << tmpBoard[1] <<
-            tmpBoard[2] << tmpBoard[3] <<
-            tmpBoard[4] << tmpBoard[5] << endl;
+        for(int j = 0; j < 6; j++)
+        {
+            if(tmpBoard[j] == false)
+                os << ' ';
+            else
+                os << cstring[b.getBlockIndex(i*6 + j)];
+        }
         tmpBoard >>= 6;
+        os << endl;
     }
+    for(int i = 0; i < b.blocks.size(); ++i)
+        cout << b.hashes[i] << ' ';
+    cout << endl;
     return os;
 }
 
