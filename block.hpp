@@ -23,6 +23,7 @@ class Block
             edge[1] = 0;
         }
 
+        Block(BlockColor c, BlockDirection dir, uint8_t len, uint8_t e, int gid);
         Block(BlockColor c, BlockDirection dir, uint8_t len, uint8_t e);
 
         friend ostream& operator<<(ostream& os, const Block& b);
@@ -64,6 +65,10 @@ class Block
         {
             return color;
         }
+        unsigned hash()
+        {
+            return (globalId << 8 | edge[0]);
+        }
         int unit_test();
     private:
         // helper functions of moveDistance
@@ -87,4 +92,5 @@ class Block
         uint8_t length; // the block size: 2 or 3
         uint8_t edge[2]; // left(right) of this block
         uint8_t multiplier;
+        uint8_t globalId;
 };

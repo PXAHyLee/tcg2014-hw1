@@ -54,7 +54,8 @@ Board Parser::getBoardFromFile()
         input_file >> edge >> length >> d >> c;
         cout << edge << " " << length << " " << d << " " << c << endl;
 
-        blks[i] = Block(currentColor(c), currentDirection(d), length, edge);
+        blks[i] = Block(currentColor(c), currentDirection(d), length, edge, i);
+        cout << "hashes: " << blks[i].hash() << endl;
         blks[i].fillIndices(b);
         i++;
     }

@@ -12,7 +12,7 @@ namespace unit_test {
     void block_unit_test(const Board& board)
     {
         // b1
-        Block b1 {BlockColor::RED, BlockDirection::HORIZONTAL, 2, 0};
+        Block b1 {BlockColor::RED, BlockDirection::HORIZONTAL, 2, 0, 0};
         b1.unit_test();
         for(int i = 0; i < 36; i++)
             if(b1.isBelongsToThisBlock(i)) {
@@ -22,7 +22,7 @@ namespace unit_test {
         cout << b1 << endl;
 
         // b2
-        Block b2 {BlockColor::BROWN, BlockDirection::VERTICAL, 3, 14};
+        Block b2 {BlockColor::BROWN, BlockDirection::VERTICAL, 3, 14, 1};
         b2.unit_test();
         for(int i = 0; i < 36; i++)
             if(b2.isBelongsToThisBlock(i)) {
@@ -47,19 +47,23 @@ namespace unit_test {
     int main() {
         Parser parser(string("input/input2"));
         Board board(parser.getBoardFromFile());
-        SearchAlgorithm* algo = new BFS(board);
 
-        Board::setAlgorithm(algo);
-        cout << "initial board is like: " << endl;
-        cout << board << endl;
-        cout << "--------------------" << endl;
+        unit_test::block_unit_test(board);
 
-        vector<Board> bb = board.moves();
-        cout << bb.size() << endl;
-        for(auto e : bb)
-        {
-            cout << e << endl;
-        }
+        // SearchAlgorithm* algo = new BFS(board);
+        //
+        // Board::setAlgorithm(algo);
+        // cout << "initial board is like: " << endl;
+        // cout << board << endl;
+        // cout << "--------------------" << endl;
+
+        // try one moves
+        // vector<Board> bb = board.moves();
+        // cout << bb.size() << endl;
+        // for(auto e : bb)
+        // {
+        //     cout << e << endl;
+        // }
 
         // algo->solveProblem();
         return 0;

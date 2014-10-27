@@ -6,6 +6,13 @@ using std::cout;
 using std::endl;
 using std::vector;
 
+Block::Block(BlockColor c, BlockDirection dir, uint8_t len, uint8_t e, int gid) :
+    color(c), direction(dir), length(len),
+    multiplier((direction == BlockDirection::VERTICAL) ? 6 : 1), globalId(gid)
+{
+    setSmallEdge(e);
+}
+
 Block::Block(BlockColor c, BlockDirection dir, uint8_t len, uint8_t e) :
     color(c), direction(dir), length(len),
     multiplier((direction == BlockDirection::VERTICAL) ? 6 : 1)
@@ -137,5 +144,7 @@ int Block::unit_test() {
     cout << "Second: " << static_cast<int>(get(1)) << endl;
     cout << "is horizontal? " << static_cast<int>(isHorizontal()) << endl;
     cout << "is Vertical? " << static_cast<int>(isVertical()) << endl;
+    cout << "globalId " << static_cast<int>(globalId) << endl;
+    cout << "hash of the block: " << hash() << endl;
     return 0;
 }

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstring>
 #include <string>
 #include <cassert>
 #include <iostream>
@@ -24,7 +25,10 @@ class Board
         {
             blocks.reserve(static_cast<int>(numberOfBlk));
             for(uint8_t i = 0; i < numberOfBlk; ++i)
+            {
                 blocks.push_back(blkArray[i]);
+                hashes[i] = blocks[i].hash();
+            }
         }
 
         // enumerates all legal moves 
@@ -75,6 +79,25 @@ class Board
                 assert(board[i] == false);
                 board[i] = true;
             }
+            hashes[blkIdx] = blk.hash();
+        }
+
+        bool canRedBlockUnblockInOneStep()
+        {
+            for(auto e : blocks)
+            {
+                if(e.getColor() == BlockColor::RED)
+                {
+                    bool rst = true;
+                    for(int j = e.get(1); j < 18; ++j)
+                    {
+                        rst &= board[j] == false;
+                        if(rst == false)
+                            return rst;
+                    }
+                }
+            }
+            return true;
         }
 
         /* ===== opertors ===== */
@@ -85,7 +108,14 @@ class Board
             return board[index];
         }
 
-        /* static member function */
+        bool operator<(const Board& other) const
+        {
+            return memcmp(hashes, other.hashes, sizeof(hashes));
+        }
+
+        friend ostream& operator<<(ostream& os, const Board& b);
+
+        /* ===== static member function =====*/
         static void setAlgorithm(SearchAlgorithm* a)
         {
             algorithm = a;
@@ -96,11 +126,10 @@ class Board
             return board[16] == true && board[17] == true && 
                 blocks[getBlockIndex(16)].getColor() == BlockColor::RED;
         }
-
-        friend ostream& operator<<(ostream& os, const Board& b);
     private:
         static SearchAlgorithm* algorithm;
+        uint32_t cost;
+        unsigned hashes[18];
         bitset<36> board;
         vector<Block> blocks;
-        uint32_t cost;
 };
