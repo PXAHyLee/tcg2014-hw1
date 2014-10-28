@@ -2,26 +2,34 @@
 
 #include <cstring>
 #include <string>
+#include <cstdint>
 #include <cassert>
 #include <iostream>
 #include <bitset>
 #include <vector>
-#include <cstdint>
+#include <list>
+#include <utility>
+#include "move.hpp"
 #include "block.hpp"
 
 using std::bitset;
 using std::vector;
+using std::list;
 using std::cout;
+using std::pair;
 using std::ostream;
 using std::endl;
 
 class SearchAlgorithm;
+class Board;
+typedef pair<vector<Board>, vector<Move>> BoardsAndMoves;
 
 class Board
 {
     public:
+        // [reminder] root has undefined previous move
         Board(const bitset<36> initialBoard, uint8_t numberOfBlk,
-                const Block* blkArray) : board(initialBoard), cost(0)
+                const Block* blkArray) : cost(0), board(initialBoard)
         {
             // initialize to zero
             memset(hashes, 0, sizeof(hashes));
@@ -34,39 +42,26 @@ class Board
         }
 
         // enumerates all legal moves 
-        vector<Board> moves() const;
+        BoardsAndMoves moves();
 
         // input: a board index
         // output: the block index, if exists. return -1 if there's no block
         //         going over this board index.
         int getBlockIndex(int boardIndex) const;
 
-        bitset<36> getBoard() const
-        {
-            return board;
-        }
+        bitset<36> getBoard() const { return board; }
 
         Block getBlock(int blockIndex) const
         {
             return Block(blocks.at(blockIndex));
         }
 
-        int getNumberOfBlocks() const
-        {
-            return blocks.size();
-        }
+        int getNumberOfBlocks() const { return blocks.size(); }
 
-        void increaseCost()
-        {
-            cost++;
-        }
+        void increaseCost() { cost++; }
 
-        uint32_t getCost() const
-        {
-            return cost;
-        }
+        uint32_t getCost() const { return cost; }
 
-        // TODO: unit test
         void updateTheBoard(int blkIdx, int smallEdgeIndex)
         {
             Block& blk = blocks[blkIdx];
@@ -106,6 +101,37 @@ class Board
             return true;
         }
 
+        void renderTheBoards(uint8_t *prettyBoard) const
+        {
+            for(int i = 0; i < 36; ++i)
+            {
+                if(board[i] == false)
+                {
+                    prettyBoard[i] = ' ';
+                }
+                else
+                {
+                    prettyBoard[i] = Board::cstring[getBlockIndex(i)];
+                }
+            }
+        }
+        
+        Board backtrackTheBoard(Move& m)
+        {
+            Board boardBeforeOneMove(*this);
+            uint8_t blkIdx = m.getBlockIndex();
+            Block blk = boardBeforeOneMove.getBlock(static_cast<int>(blkIdx));
+            auto moveDistance = m.getMoveDistance();
+
+            // inverse the direction...
+            // we are backtracking the move
+            moveDistance = -moveDistance;
+            auto originalEdge = blk.get(0) + moveDistance * blk.getMultiplier();
+            boardBeforeOneMove.updateTheBoard(blkIdx, originalEdge);
+
+            return boardBeforeOneMove;
+        }
+
         /* ===== opertors ===== */
         // return the bit of input index
         bool operator[](uint32_t index) const
@@ -122,18 +148,19 @@ class Board
         friend ostream& operator<<(ostream& os, const Board& b);
 
         /* ===== static member function =====*/
-        static void setAlgorithm(SearchAlgorithm* a)
+        static void setAlgorithm(const char* c)
         {
-            algorithm = a;
+            algorithm = c;
         }
 
         bool isGoal()
         {
             return board[16] == true && board[17] == true && 
-                blocks[getBlockIndex(16)].getColor() == BlockColor::RED;
+                blocks[getBlockIndex(17)].getColor() == BlockColor::RED;
         }
     private:
-        static SearchAlgorithm* algorithm;
+        static const char* cstring;
+        static const char* algorithm;
         uint32_t cost;
         unsigned hashes[18];
         bitset<36> board;

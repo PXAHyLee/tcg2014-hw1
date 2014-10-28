@@ -17,7 +17,8 @@ class Block
 {
     public:
         Block() : color(BlockColor::UNDEFINED),
-            direction(BlockDirection::UNDEFINED), multiplier(0), edge(0) { };
+            direction(BlockDirection::UNDEFINED), length(0),
+            edge(0), multiplier(0), globalId(0) { }
 
         Block(BlockColor c, BlockDirection dir, uint8_t len, uint8_t e, int gid);
         Block(BlockColor c, BlockDirection dir, uint8_t len, uint8_t e);
@@ -45,6 +46,7 @@ class Block
         // moves distances of this block
         // fill two directions in the array
         void fillIndices(bitset<36>& bitmap);
+        BlockDirection getDirection() const { return direction; }
         bool isHorizontal() const { return direction == BlockDirection::HORIZONTAL; } 
         bool isVertical() const { return direction == BlockDirection::VERTICAL; }
         bool isBelongsToThisBlock(int boardIndex) const

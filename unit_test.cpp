@@ -45,25 +45,16 @@ namespace unit_test {
 
     // main function in unit_test
     int main() {
-        Parser parser(string("input/input2"));
+        Parser parser(string("input/input1"));
         Board board(parser.getBoardFromFile());
+
+        cout << "Initial Board:" << endl;
+        cout << board;
 
         // unit_test::block_unit_test(board);
 
         SearchAlgorithm* algo = new BFSWithVistedStatesCheck(board);
-
-        Board::setAlgorithm(algo);
-        cout << "initial board is like: " << endl;
-        cout << board << endl;
-        cout << "--------------------" << endl;
-
-        // try one moves
-        // vector<Board> bb = board.moves();
-        // cout << bb.size() << endl;
-        // for(auto e : bb)
-        // {
-        //     cout << e << endl;
-        // }
+        Board::setAlgorithm("BFS - Checking Visited states");
 
         algo->solveProblem();
         return 0;

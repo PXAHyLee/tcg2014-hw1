@@ -1,9 +1,13 @@
+#pragma once
+
 #include <vector>
 #include <list>
 #include <queue>
+#include <map>
 #include <set>
 #include <iostream>
 #include <utility>
+#include <cstdlib>
 #include "board.hpp"
 
 using std::queue;
@@ -12,6 +16,11 @@ using std::endl;
 using std::set;
 using std::move;
 using std::list;
+using std::map;
+using std::pair;
+using std::make_pair;
+
+typedef pair<Board, Move> BoardAndMovePair;
 
 class SearchAlgorithm
 {
@@ -42,58 +51,6 @@ class SearchAlgorithm
         uint64_t expanded_states;
 };
 
-class BFS final : public SearchAlgorithm
-{
-    public:
-        BFS(const Board& root)
-        {
-            states.push(root);
-        }
-
-        void solveProblem() override
-        {
-            Board b = states.front();
-            states.pop();
-            int currentDepth = 0;
-            while(!b.isGoal())
-            {
-                increaseExpandedStatesByOne();
-                vector<Board> newStates = b.moves();
-                if(b.canRedBlockUnblockInOneStep())
-                {
-                    cout << "find the solution!!" << endl;
-                    exit(1);
-                }
-                for(auto e : newStates)
-                {
-                    states.emplace(e);
-                }
-                b = states.front();
-                states.pop();
-                if(currentDepth < b.getCost())
-                {
-                    currentDepth += 1;
-                    cout << "depth += 1 => depth is: " << currentDepth << endl;
-                    cout << "expanded_states: " << getExpandedStates() << endl;
-                    cout << "size of queue: " << states.size() << endl;
-                    cout << "--------------------" << endl;
-                }
-            }
-            cout << b << endl;
-            cout << "===" << __PRETTY_FUNCTION__ << "===" << endl;
-            cout << "expanded states: " << getExpandedStates() << endl;
-            cout << "cost of solution: " << b.getCost() << endl;
-        }
-    protected:
-        // there is no heuristic function in BFS
-        int cost(const Board& b) override
-        {
-            return currentCost(b);
-        }
-    private:
-        queue<Board> states;
-};
-
 class BFSWithVistedStatesCheck final : public SearchAlgorithm
 {
     public:
@@ -112,68 +69,51 @@ class BFSWithVistedStatesCheck final : public SearchAlgorithm
             while(!b.isGoal())
             {
                 increaseExpandedStatesByOne();
-                if(b.canRedBlockUnblockInOneStep())
-                {
-                    cout << "find the solution" << endl;
 
-                    // plus the last step
-                    cout << "cost: " << cost(b) + 1 << endl;
-                    return;
-                }
-
-                // can't unblock the red block
                 // generate the available moves
-                vector<Board> newStates = b.moves();
-                for(auto e : newStates)
+                BoardsAndMoves newStates = b.moves();
+                for(int i = 0; i < newStates.first.size(); ++i)
                 {
-                    if(visited.find(e) != visited.end())
+                    if(visited.find(newStates.first[i]) != visited.end())
                         continue;
 
                     // this state isn't visited;
                     // push to the queue
-                    states.emplace_back(e);
-                    visited.insert(e);
+                    states.emplace_back((newStates.first)[i]);
+                    visited.insert((newStates.first)[i]);
+                    lastMoves.insert(make_pair(newStates.first[i],
+                            newStates.second[i]));
                 }
                 b = move(states.front());
                 states.pop_front();
                 if(currentDepth < b.getCost())
                 {
                     currentDepth += 1;
-                    cout << "depth += 1 => depth is: " << currentDepth << endl;
-                    cout << "expanded_states: " << getExpandedStates() << endl;
-                    cout << "size of queue: " << states.size() << endl;
-                    
-                    // if(currentDepth == 2) 
-                    // {
-                    //     Board* barr[3] {NULL, NULL, NULL}; 
-                    //     int iterator = 0;
-                    //     for(auto e : states)
-                    //     {
-                    //         if(e.getBlock(2).get(0) == 14 && e.getBlock(5).get(0) == 21)
-                    //         {
-                    //             barr[iterator] = &e;
-                    //             iterator++;
-                    //             assert(iterator == 0 || iterator == 1 || iterator == 2);
-                    //             cout << "depth: " << currentDepth<< " ==>" << endl;
-                    //             cout << e;
-                    //         }
-                    //     }
-                    //     if(iterator == 1)
-                    //     {
-                    //         cout << "done!!" << endl;
-                    //     }
-                    //     else {
-                    //         cout << "are two object the same??" << endl;
-                    //         cout << (*barr[0] < *barr[1]) << endl;
-                    //         cout << (*barr[1] < *barr[0]) << endl;
-                    //     }
-                    //     cout << "reach maximum depth, stop" << endl;
-                    //     return;
-                    // }
-                    // cout << "--------------------" << endl;
                 }
             }
-            cout << "find the goal state: " << cost(b) << endl;
+            cout << "Find the goal state, and it costs " << cost(b) <<
+                " steps to take here" << endl;
+
+            // find the previous move until this board is root
+            vector<BoardAndMovePair> solution;
+            solution.reserve(16);
+
+            while(lastMoves.count(b) == 1)
+            {
+                auto it = lastMoves.find(b);
+
+                solution.push_back(make_pair(b, it->second));
+                b = b.backtrackTheBoard(it->second);
+            }
+            // print the root board, it doesn't have the previousMove
+            cout << b;
+
+            // print the non-root board
+            for(auto rit = solution.rbegin(); rit != solution.rend(); ++rit)
+            {
+                cout << rit->second;
+                cout << rit->first;
+            }
         }
     protected:
         // there is no heuristic function in BFSWithVistedStatesCheck
@@ -184,4 +124,5 @@ class BFSWithVistedStatesCheck final : public SearchAlgorithm
     private:
         list<Board> states;
         set<Board> visited;
+        map<Board, Move> lastMoves;
 };

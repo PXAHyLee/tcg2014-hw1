@@ -1,24 +1,26 @@
 #include "board.hpp"
 #include <iostream>
+#include <cstdint>
 
 using std::cout;
 using std::endl;
 
-SearchAlgorithm* Board::algorithm = 0;
-vector<Board> Board::moves() const
-{
-    /* TODO: to be implemented */
-    vector<Board> boards;
-    int numberOfLegalMoves {0};
+const char* Board::algorithm = 0;
+const char* Board::cstring = "ABCDEFGHIJKLMNO";
 
-    boards.reserve(4);
+BoardsAndMoves Board::moves()
+{
+    vector<Board> boards;
+    vector<Move> moves;
+    uint8_t prettyBoard[36] {0};
+
+    renderTheBoards(prettyBoard);
     for(int i = 0; i < blocks.size(); i++)
     {
         int twoDirection[2] {-1, -1};
 
         blocks[i].moveDistance(board, twoDirection);
         assert(twoDirection[0] >= 0 && twoDirection[1] >= 0);
-        // cout << twoDirection[0] << " " << twoDirection[1] << endl;
         for(int j = twoDirection[0]; j != blocks[i].get(0); j += blocks[i].getMultiplier())
         {
             // c++11; test for copy constructor
@@ -26,26 +28,29 @@ vector<Board> Board::moves() const
             //boards.emplace_back(*this);
             boards.back().updateTheBoard(i, j);
             boards.back().increaseCost();
-            numberOfLegalMoves++;
+
+            moves.push_back(Move(static_cast<uint8_t>(i),
+                    (j - blocks[i].get(0)) / blocks[i].getMultiplier(),
+                    blocks[i].getDirection(),
+                    prettyBoard));
         }
 
         for(int j = twoDirection[1]; j != blocks[i].get(1); j -= blocks[i].getMultiplier())
         {
-            // cout << blocks[i] << endl;
-            // cout << j << " " << (int)blocks[i].get(0) << " " << (int)blocks[i].get(1) << endl;
-            // cout << "==========" << endl;
             // c++11; test for copy constructor
             boards.push_back(Board(*this));
             //boards.emplace_back(*this);
             boards.back().updateTheBoard(i,
                     j - (blocks[i].size() - 1) * blocks[i].getMultiplier());
             boards.back().increaseCost();
-            numberOfLegalMoves++;
+            
+            moves.push_back(Move(static_cast<uint8_t>(i),
+                    (j - blocks[i].get(1)) / blocks[i].getMultiplier(),
+                    blocks[i].getDirection(),
+                    prettyBoard));
         }
     }
-    // cout << __PRETTY_FUNCTION__ << ", numberOfLegalMoves: " <<
-    //     numberOfLegalMoves << endl;
-    return boards;
+    return make_pair(boards, moves);
 }
 
 // a friend function isn't a member function of Board!
@@ -64,9 +69,6 @@ ostream& operator<<(ostream& os, const Board& b)
         tmpBoard >>= 6;
         os << endl;
     }
-    for(int i = 0; i < b.blocks.size(); ++i)
-        cout << b.hashes[i] << ' ';
-    cout << endl;
     return os;
 }
 
@@ -79,7 +81,5 @@ int Board::getBlockIndex(int boardIndex) const
         if(blocks[i].isBelongsToThisBlock(boardIndex))
             return i;
     }
-    // this shouldn't be reached
-    // assert(true == false);
     return -1;
 }

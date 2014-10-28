@@ -44,18 +44,14 @@ Board Parser::getBoardFromFile()
     bitset<36> b;
 
     input_file >> numberOfBlocks;
-    cout << numberOfBlocks << endl;
     while(i < numberOfBlocks)
     {
         int edge {0}, length {0};
-        uint8_t indices[3] {0};
         char d, c;
 
         input_file >> edge >> length >> d >> c;
-        cout << edge << " " << length << " " << d << " " << c << endl;
 
         blks[i] = Block(currentColor(c), currentDirection(d), length, edge, i);
-        cout << "hashes: " << blks[i].hash() << endl;
         blks[i].fillIndices(b);
         i++;
     }

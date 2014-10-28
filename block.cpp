@@ -6,15 +6,18 @@ using std::cout;
 using std::endl;
 using std::vector;
 
-Block::Block(BlockColor c, BlockDirection dir, uint8_t len, uint8_t e, int gid) :
-    color(c), direction(dir), length(len),
-    multiplier((direction == BlockDirection::VERTICAL) ? 6 : 1), globalId(gid),
-    edge(e) { }
+Block::Block(BlockColor c, BlockDirection dir, uint8_t len,
+             uint8_t e, int gid) :
+             color(c),
+             direction(dir),
+             length(len),
+             edge(e),
+             multiplier((direction == BlockDirection::VERTICAL) ? 6 : 1),
+             globalId(gid) { }
 
 Block::Block(BlockColor c, BlockDirection dir, uint8_t len, uint8_t e) :
-    color(c), direction(dir), length(len),
-    multiplier((direction == BlockDirection::VERTICAL) ? 6 : 1),
-    edge(e) { }
+    color(c), direction(dir), length(len), edge(e), 
+    multiplier((direction == BlockDirection::VERTICAL) ? 6 : 1) { }
 
 ostream& operator<<(ostream& os, const Block& b)
 {
