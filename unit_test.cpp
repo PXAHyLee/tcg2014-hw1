@@ -3,7 +3,6 @@
 #include <cstdlib>
 #include <cstdint>
 #include "parser.hpp"
-#include "board.hpp"
 #include "SearchAlgorithm.hpp"
 using std::cout;
 using std::string;
@@ -55,8 +54,13 @@ namespace unit_test {
 
         SearchAlgorithm* algo = new BFSWithVistedStatesCheck(board);
         Board::setAlgorithm("BFS - Checking Visited states");
-
+        cout << Board::algorithm << endl;
         algo->solveProblem();
+
+        SearchAlgorithm* algo2 = new AStar(board);
+        Board::setAlgorithm("AStar - Checking Visited states");
+        cout << Board::algorithm << endl;
+        algo2->solveProblem();
         return 0;
     }
 }

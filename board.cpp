@@ -8,6 +8,7 @@ using std::endl;
 const char* Board::algorithm = 0;
 const char* Board::cstring = "ABCDEFGHIJKLMNO";
 
+
 BoardsAndMoves Board::moves()
 {
     vector<Board> boards;
@@ -23,13 +24,10 @@ BoardsAndMoves Board::moves()
         assert(twoDirection[0] >= 0 && twoDirection[1] >= 0);
         for(int j = twoDirection[0]; j != blocks[i].get(0); j += blocks[i].getMultiplier())
         {
-            // c++11; test for copy constructor
-            boards.push_back(Board(*this));
-            //boards.emplace_back(*this);
+            boards.emplace_back(Board(*this));
             boards.back().updateTheBoard(i, j);
             boards.back().increaseCost();
-
-            moves.push_back(Move(static_cast<uint8_t>(i),
+            moves.emplace_back(Move(static_cast<uint8_t>(i),
                     (j - blocks[i].get(0)) / blocks[i].getMultiplier(),
                     blocks[i].getDirection(),
                     prettyBoard));
@@ -37,14 +35,11 @@ BoardsAndMoves Board::moves()
 
         for(int j = twoDirection[1]; j != blocks[i].get(1); j -= blocks[i].getMultiplier())
         {
-            // c++11; test for copy constructor
-            boards.push_back(Board(*this));
-            //boards.emplace_back(*this);
+            boards.emplace_back(Board(*this));
             boards.back().updateTheBoard(i,
                     j - (blocks[i].size() - 1) * blocks[i].getMultiplier());
             boards.back().increaseCost();
-            
-            moves.push_back(Move(static_cast<uint8_t>(i),
+            moves.emplace_back(Move(static_cast<uint8_t>(i),
                     (j - blocks[i].get(1)) / blocks[i].getMultiplier(),
                     blocks[i].getDirection(),
                     prettyBoard));

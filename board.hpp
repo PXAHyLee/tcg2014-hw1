@@ -22,12 +22,13 @@ using std::endl;
 
 class SearchAlgorithm;
 class Board;
+
 typedef pair<vector<Board>, vector<Move>> BoardsAndMoves;
 
 class Board
 {
     public:
-        // [reminder] root has undefined previous move
+        static const char* algorithm;
         Board(const bitset<36> initialBoard, uint8_t numberOfBlk,
                 const Block* blkArray) : cost(0), board(initialBoard)
         {
@@ -40,6 +41,13 @@ class Board
                 hashes[i] = blocks[i].hash();
             }
         }
+
+        // Board(const Board& other):
+        //     cost(other.cost), board(other.board), blocks(other.blocks)
+        // {
+        //     memcpy(hashes, other.hashes, sizeof(hashes));
+        //     Board::ctor++;
+        // }
 
         // enumerates all legal moves 
         BoardsAndMoves moves();
@@ -140,9 +148,41 @@ class Board
             return board[index];
         }
 
+        // std::set and std::map
         bool operator<(const Board& other) const
         {
             return memcmp(hashes, other.hashes, sizeof(hashes)) < 0;
+        }
+
+        // priority_queue (std::greater)
+        // a > b: Board a may take more cost to reach the solution than Board b
+        bool operator>(const Board& other) const
+        {
+            uint32_t val = cost + numberOfObstacle();
+            uint32_t other_val = other.cost + other.numberOfObstacle();
+            return val > other_val;
+        }
+
+        /* ===== list of heuristic functions =====*/
+        int numberOfObstacle() const
+        {
+            int obstacle {0};
+            for(auto e : blocks)
+            {
+                if(e.getColor() == BlockColor::RED)
+                {
+                    // don't count the brown block behind the red block
+                    for(int i = e.get(0); i < 18; ++i)
+                    {
+                        auto blkIdx = getBlockIndex(i);
+                        if(blkIdx >= 0 &&
+                                getBlock(blkIdx).getColor() == BlockColor::BROWN)
+                            obstacle++;
+                    }
+                }
+            }
+            
+            return obstacle;
         }
 
         friend ostream& operator<<(ostream& os, const Board& b);
@@ -160,7 +200,6 @@ class Board
         }
     private:
         static const char* cstring;
-        static const char* algorithm;
         uint32_t cost;
         unsigned hashes[18];
         bitset<36> board;
