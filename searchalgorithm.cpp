@@ -1,4 +1,4 @@
-#include "SearchAlgorithm.hpp"
+#include "searchalgorithm.hpp"
 
 void SearchAlgorithm::printStatisticMesssage(Board& goal)
 {
