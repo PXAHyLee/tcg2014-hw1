@@ -25,6 +25,7 @@ class Board
 {
     public:
         static const char* algorithm;
+
         Board(const bitset<36> initialBoard, uint8_t numberOfBlk,
                 const Block* blkArray) : cost(0), board(initialBoard)
         {
@@ -35,6 +36,18 @@ class Board
             {
                 blocks.push_back(blkArray[i]);
                 hashes[i] = blocks[i].hash();
+            }
+        }
+
+        // don't let compiler generate copy ctor
+        Board(const Board& other) : cost(other.cost), board(other.board)
+        {
+            memcpy(hashes, other.hashes, sizeof(hashes));
+            blocks.reserve(static_cast<int>(other.blocks.size()));
+            for(uint8_t i = 0; i < other.blocks.size(); ++i)
+            {
+                blocks.push_back(other.blocks[i]);
+                hashes[i] = other.blocks[i].hash();
             }
         }
 

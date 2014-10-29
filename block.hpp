@@ -61,7 +61,7 @@ class Block
         {
             return color;
         }
-        unsigned hash()
+        unsigned hash() const
         {
             return (globalId << 8 | edge);
         }

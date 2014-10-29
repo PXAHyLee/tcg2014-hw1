@@ -1,12 +1,13 @@
+#include "common.h"
 #include "searchalgorithm.hpp"
 
 void SearchAlgorithm::printStatisticMesssage(Board& goal)
 {
-    cout << "Find the goal state, and it costs " << cost(goal) <<
+    os << "Find the goal state, and it costs " << cost(goal) <<
         " steps to take here" << endl;
-    cout << "statistic: " << endl;
-    cout << "expanded states: " << getExpandedStates() << endl;
-    cout << "size of containers: " << getContainerSize() << endl;
+    os << "statistic: " << endl;
+    os << "expanded states: " << getExpandedStates() << endl;
+    os << "size of containers: " << getContainerSize() << endl;
     printSolution(goal, lastMoves);
 }
 
@@ -27,11 +28,11 @@ void SearchAlgorithm::printSolution(Board& goal, map<Board, Move>& lastMoveMaps)
         solution.emplace_back(make_pair(currentBoard, it->second));
         currentBoard = currentBoard.backtrackTheBoard(it->second);
     }
-    cout << currentBoard; // the root board
+    os << currentBoard; // the root board
     for(auto rit = solution.rbegin(); rit != solution.rend(); ++rit)
     {
-        cout << rit->second;
-        cout << rit->first;
+        os << rit->second;
+        os << rit->first;
     }
 }
 
@@ -60,7 +61,7 @@ void BFSWithVistedStatesCheck::solveProblem()
             lastMoves.insert(make_pair(newStates.first[i],
                         newStates.second[i]));
         }
-        b = move(states.front());
+        b = states.front();
         states.pop_front();
         if(currentDepth < b.getCost())
         {
@@ -68,7 +69,6 @@ void BFSWithVistedStatesCheck::solveProblem()
         }
     }
     printStatisticMesssage(b);
-
 }
 
 void AStar::solveProblem()
@@ -76,7 +76,7 @@ void AStar::solveProblem()
     Board b = move(states.top());
     states.pop();
 
-    cout << "cost of initial state: " << cost(b) << endl;
+    os << "cost of initial state: " << cost(b) << endl;
 
     while(!b.isGoal())
     {

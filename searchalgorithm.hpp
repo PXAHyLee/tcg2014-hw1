@@ -25,7 +25,7 @@ typedef pair<Board, Move> BoardAndMovePair;
 class SearchAlgorithm
 {
     public:
-        SearchAlgorithm() : expanded_states(0) { }
+        SearchAlgorithm(ostream& out) : os(out), expanded_states(0) { }
         virtual void solveProblem() = 0;
         virtual ~SearchAlgorithm() { }
     protected:
@@ -47,6 +47,7 @@ class SearchAlgorithm
         /* data members */
         map<Board, Move> lastMoves;
         set<Board> visited;
+        ostream& os;
     private:
         uint64_t expanded_states;
 };
@@ -54,7 +55,8 @@ class SearchAlgorithm
 class BFSWithVistedStatesCheck final : public SearchAlgorithm
 {
     public:
-        BFSWithVistedStatesCheck(const Board& root)
+        BFSWithVistedStatesCheck(const Board root, ostream& os) : 
+            SearchAlgorithm(os)
         {
             states.push_back(root);
             visited.insert(root);
@@ -68,7 +70,7 @@ class BFSWithVistedStatesCheck final : public SearchAlgorithm
 class AStar final : public SearchAlgorithm
 {
     public:
-        AStar(const Board& root)
+        AStar(const Board root, ostream& os) : SearchAlgorithm(os)
         {
             states.emplace(root);
             visited.emplace(root);

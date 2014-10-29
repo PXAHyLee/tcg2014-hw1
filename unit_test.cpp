@@ -1,10 +1,10 @@
-#include <iostream>
+#include "common.h"
+
 #include <string>
 #include <cstdlib>
 #include <cstdint>
 #include "parser.hpp"
-#include "SearchAlgorithm.hpp"
-using std::cout;
+#include "searchalgorithm.hpp"
 using std::string;
 
 namespace unit_test {
@@ -52,19 +52,15 @@ namespace unit_test {
 
         // unit_test::block_unit_test(board);
 
-        SearchAlgorithm* algo = new BFSWithVistedStatesCheck(board);
+        SearchAlgorithm* algo = new BFSWithVistedStatesCheck(board, cout);
         Board::setAlgorithm("BFS - Checking Visited states");
         cout << Board::algorithm << endl;
         algo->solveProblem();
 
-        SearchAlgorithm* algo2 = new AStar(board);
+        SearchAlgorithm* algo2 = new AStar(board, cout);
         Board::setAlgorithm("AStar - Checking Visited states");
         cout << Board::algorithm << endl;
         algo2->solveProblem();
         return 0;
     }
-}
-
-int main() {
-    return unit_test::main();
 }
