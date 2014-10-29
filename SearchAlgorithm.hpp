@@ -27,6 +27,7 @@ typedef pair<Board, Move> BoardAndMovePair;
 class SearchAlgorithm
 {
     public:
+        SearchAlgorithm() : expanded_states(0) { }
         virtual void solveProblem() = 0;
         virtual ~SearchAlgorithm() { }
     protected:
