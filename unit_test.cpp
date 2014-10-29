@@ -44,7 +44,7 @@ namespace unit_test {
 
     // main function in unit_test
     int main() {
-        Parser parser(string("input/input1"));
+        Parser parser(string("input/e314"));
         Board board(parser.getBoardFromFile());
 
         cout << "Initial Board:" << endl;

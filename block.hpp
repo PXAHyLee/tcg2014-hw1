@@ -1,14 +1,12 @@
 #pragma once
 
-#include <iostream>
-#include <vector>
+#include "common.h"
+
 #include <bitset>
 #include <cassert>
 #include <cstdint>
 
-using std::ostream;
 using std::bitset;
-using std::vector;
 
 enum class BlockDirection { HORIZONTAL, VERTICAL, UNDEFINED};
 enum class BlockColor { RED, BROWN, UNDEFINED};

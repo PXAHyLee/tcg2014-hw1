@@ -1,24 +1,20 @@
 #pragma once
 
+#include "common.h"
+#include "move.hpp"
+#include "block.hpp"
+
 #include <cstring>
 #include <string>
 #include <cstdint>
 #include <cassert>
-#include <iostream>
 #include <bitset>
-#include <vector>
 #include <list>
 #include <utility>
-#include "move.hpp"
-#include "block.hpp"
 
 using std::bitset;
-using std::vector;
 using std::list;
-using std::cout;
 using std::pair;
-using std::ostream;
-using std::endl;
 
 class SearchAlgorithm;
 class Board;

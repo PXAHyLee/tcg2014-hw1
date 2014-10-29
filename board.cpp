@@ -1,9 +1,4 @@
 #include "board.hpp"
-#include <iostream>
-#include <cstdint>
-
-using std::cout;
-using std::endl;
 
 const char* Board::algorithm = 0;
 const char* Board::cstring = "ABCDEFGHIJKLMNO";

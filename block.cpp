@@ -1,9 +1,5 @@
 #include "block.hpp"
-#include <ostream>
 
-using std::ostream;
-using std::cout;
-using std::endl;
 using std::vector;
 
 Block::Block(BlockColor c, BlockDirection dir, uint8_t len,
