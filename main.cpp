@@ -1,6 +1,9 @@
 #include "common.h"
-#include "searchalgorithm.hpp"
+#include "move.hpp"
+#include "block.hpp"
+#include "board.hpp"
 #include "parser.hpp"
+#include "searchalgorithm.hpp"
 
 using std::string;
 string getOutputFilename(const string& inputFilename)
@@ -12,11 +15,6 @@ string getOutputFilename(const string& inputFilename)
         i++;
     i++;
     return string("sol/") + string(inputFilename, i) + ending;
-}
-
-int writeSolution(const char* filename)
-{
-    return 1;
 }
 
 int main()
