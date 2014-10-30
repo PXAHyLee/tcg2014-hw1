@@ -3,7 +3,6 @@
 const char* Board::algorithm = 0;
 const char* Board::cstring = "ABCDEFGHIJKLMNO";
 
-
 BoardsAndMoves Board::moves()
 {
     vector<Board> boards;
@@ -43,6 +42,53 @@ BoardsAndMoves Board::moves()
     return make_pair(boards, moves);
 }
 
+int Board::getBlockIndex(int boardIndex) const
+{
+    if(board[boardIndex] == false)
+        return -1;
+    for(int i = 0; i < blocks.size(); ++i)
+    {
+        if(blocks[i].isBelongsToThisBlock(boardIndex))
+            return i;
+    }
+    return -1;
+}
+
+void Board::updateTheBoard(int blkIdx, int smallEdgeIndex)
+{
+    Block& blk = blocks[blkIdx];
+    for(int i = blk.get(0); i <= blk.get(1); i += blk.getMultiplier())
+    {
+        assert(board[i] == true);
+        board[i] = false;
+    }
+    blk.set(smallEdgeIndex);
+    for(int i = blk.get(0); i <= blk.get(1); i += blk.getMultiplier())
+    {
+        assert(board[i] == false);
+        board[i] = true;
+    }
+    hashes[blkIdx] = blk.hash();
+    assert(hashes[blkIdx] != org_hash);
+    for(int i = blocks.size() + 1; i < 18; ++i)
+        assert(hashes[i] == 0);
+}
+
+void Board::renderTheBoards(uint8_t *prettyBoard) const
+{
+    for(int i = 0; i < 36; ++i)
+    {
+        if(board[i] == false)
+        {
+            prettyBoard[i] = ' ';
+        }
+        else
+        {
+            prettyBoard[i] = Board::cstring[getBlockIndex(i)];
+        }
+    }
+}
+
 // a friend function isn't a member function of Board!
 ostream& operator<<(ostream& os, const Board& b)
 {
@@ -62,14 +108,24 @@ ostream& operator<<(ostream& os, const Board& b)
     return os;
 }
 
-int Board::getBlockIndex(int boardIndex) const
+
+int Board::numberOfObstacle() const
 {
-    if(board[boardIndex] == false)
-        return -1;
-    for(int i = 0; i < blocks.size(); ++i)
+    int obstacle {0};
+    for(auto e : blocks)
     {
-        if(blocks[i].isBelongsToThisBlock(boardIndex))
-            return i;
+        if(e.getColor() == BlockColor::RED)
+        {
+            // don't count the brown block behind the red block
+            for(int i = e.get(0); i < 18; ++i)
+            {
+                auto blkIdx = getBlockIndex(i);
+                if(blkIdx >= 0 &&
+                        getBlock(blkIdx).getColor() == BlockColor::BROWN)
+                    obstacle++;
+            }
+        }
     }
-    return -1;
+
+    return obstacle;
 }

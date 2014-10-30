@@ -51,13 +51,6 @@ class Board
             }
         }
 
-        // Board(const Board& other):
-        //     cost(other.cost), board(other.board), blocks(other.blocks)
-        // {
-        //     memcpy(hashes, other.hashes, sizeof(hashes));
-        //     Board::ctor++;
-        // }
-
         // enumerates all legal moves 
         BoardsAndMoves moves();
 
@@ -79,59 +72,9 @@ class Board
 
         uint32_t getCost() const { return cost; }
 
-        void updateTheBoard(int blkIdx, int smallEdgeIndex)
-        {
-            Block& blk = blocks[blkIdx];
-            int org_hash = blk.hash();
-            for(int i = blk.get(0); i <= blk.get(1); i += blk.getMultiplier())
-            {
-                assert(board[i] == true);
-                board[i] = false;
-            }
-            blk.set(smallEdgeIndex);
-            for(int i = blk.get(0); i <= blk.get(1); i += blk.getMultiplier())
-            {
-                assert(board[i] == false);
-                board[i] = true;
-            }
-            hashes[blkIdx] = blk.hash();
-            assert(hashes[blkIdx] != org_hash);
-            for(int i = blocks.size() + 1; i < 18; ++i)
-                assert(hashes[i] == 0);
-        }
+        void updateTheBoard(int blkIdx, int smallEdgeIndex);
 
-        bool canRedBlockUnblockInOneStep()
-        {
-            for(auto e : blocks)
-            {
-                if(e.getColor() == BlockColor::RED)
-                {
-                    bool rst = true;
-                    for(int j = e.get(1) + 1; j < 18; ++j)
-                    {
-                        rst &= (board[j] == false);
-                        if(rst == false)
-                            return rst;
-                    }
-                }
-            }
-            return true;
-        }
-
-        void renderTheBoards(uint8_t *prettyBoard) const
-        {
-            for(int i = 0; i < 36; ++i)
-            {
-                if(board[i] == false)
-                {
-                    prettyBoard[i] = ' ';
-                }
-                else
-                {
-                    prettyBoard[i] = Board::cstring[getBlockIndex(i)];
-                }
-            }
-        }
+        void renderTheBoards(uint8_t *prettyBoard) const;
         
         Board backtrackTheBoard(Move& m)
         {
@@ -173,34 +116,12 @@ class Board
         }
 
         /* ===== list of heuristic functions =====*/
-        int numberOfObstacle() const
-        {
-            int obstacle {0};
-            for(auto e : blocks)
-            {
-                if(e.getColor() == BlockColor::RED)
-                {
-                    // don't count the brown block behind the red block
-                    for(int i = e.get(0); i < 18; ++i)
-                    {
-                        auto blkIdx = getBlockIndex(i);
-                        if(blkIdx >= 0 &&
-                                getBlock(blkIdx).getColor() == BlockColor::BROWN)
-                            obstacle++;
-                    }
-                }
-            }
-            
-            return obstacle;
-        }
+        int numberOfObstacle() const;
 
         friend ostream& operator<<(ostream& os, const Board& b);
 
         /* ===== static member function =====*/
-        static void setAlgorithm(const char* c)
-        {
-            algorithm = c;
-        }
+        static void setAlgorithm(const char* c) { algorithm = c; }
 
         bool isGoal()
         {
