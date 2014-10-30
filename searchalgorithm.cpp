@@ -31,7 +31,7 @@ void SearchAlgorithm::printSolution(Board& goal, map<Board, Move>& lastMoveMaps)
     os << currentBoard; // the root board
     for(auto rit = solution.rbegin(); rit != solution.rend(); ++rit)
     {
-        os << rit->second;
+        os << rit->second << endl;
         os << rit->first;
     }
 }

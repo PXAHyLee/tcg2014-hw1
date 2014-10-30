@@ -28,7 +28,6 @@ int main()
     filenames.emplace_back("input/1");
     filenames.emplace_back("input/3");
     filenames.emplace_back("input/4");
-    filenames.emplace_back("input/a179");
     filenames.emplace_back("input/b2");
     filenames.emplace_back("input/e314");
 
@@ -56,6 +55,7 @@ int main()
         Board::setAlgorithm("BFS - Checking Visited states");
         output_file << Board::algorithm << endl;
         algo->solveProblem();
+        output_file << string(80, '*') << endl;
 
         SearchAlgorithm* algo2 = new AStar(board, output_file);
         Board::setAlgorithm("AStar - Checking Visited states");
