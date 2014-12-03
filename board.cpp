@@ -57,6 +57,7 @@ int Board::getBlockIndex(int boardIndex) const
 void Board::updateTheBoard(int blkIdx, int smallEdgeIndex)
 {
     Block& blk = blocks[blkIdx];
+    unsigned org_hash = blk.hash();
     for(int i = blk.get(0); i <= blk.get(1); i += blk.getMultiplier())
     {
         assert(board[i] == true);
